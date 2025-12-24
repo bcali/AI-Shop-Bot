@@ -1,0 +1,55 @@
+name: Sync PRD to Confluence
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/PRD.md'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get current Confluence page version
+        id: get_version
+        env:
+          ATLASSIAN_EMAIL: ${{ secrets.ATLASSIAN_EMAIL }}
+          ATLASSIAN_API_TOKEN: ${{ secrets.ATLASSIAN_API_TOKEN }}
+          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
+        run: |
+          # Fetch version from v2 API
+          VERSION=$(curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
+            -X GET "$CONFLUENCE_BASE_URL/rest/api/v2/pages/24150017" | jq '.version.number')
+          echo "version=$((VERSION + 1))" >> $GITHUB_OUTPUT
+
+      - name: Update Confluence Page
+        env:
+          ATLASSIAN_EMAIL: ${{ secrets.ATLASSIAN_EMAIL }}
+          ATLASSIAN_API_TOKEN: ${{ secrets.ATLASSIAN_API_TOKEN }}
+          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
+        run: |
+          CONTENT=$(cat docs/PRD.md)
+          # Use jq to safely escape the markdown content for JSON
+          JSON_CONTENT=$(jq -n --arg val "$CONTENT" '$val')
+          
+          curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
+            -X PUT "$CONFLUENCE_BASE_URL/rest/api/v2/pages/24150017" \
+            -H "Content-Type: application/json" \
+            --data "{
+              \"id\": \"24150017\",
+              \"status\": \"current\",
+              \"title\": \"AI Personal Shopping Concierge (PWA)\",
+              \"body\": {
+                \"representation\": \"markdown\",
+                \"value\": $JSON_CONTENT
+              },
+              \"version\": {
+                \"number\": ${{ steps.get_version.outputs.version }},
+                \"message\": \"Synced from GitHub commit ${{ github.sha }}\"
+              }
+            }"
+
