@@ -53,10 +53,12 @@ The project is configured for deployment on **Cloudflare Pages**.
 3. Select the `AI-Shop-Bot` repository.
 
 ### 2. Build Settings
-- **Framework preset**: `Next.js`
-- **Build command**: `npm run build`
-- **Build output directory**: `.next`
+- **Framework preset**: `None` (Select "None" to manually specify the command)
+- **Build command**: `npm run build && npm run pages:build`
+- **Build output directory**: `.vercel/output/static`
 - **Root directory**: `/` (default)
+
+> **Note**: If you see the error "run a Workers-specific command in a Pages project", ensure your "Build command" does **not** include `wrangler deploy`. It should only be the build scripts.
 
 ### 3. Custom Domain
 1. Once deployed, go to the **Custom domains** tab in your Pages project.
