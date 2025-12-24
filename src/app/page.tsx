@@ -1,307 +1,297 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { ShoppingBag, Menu, Bell } from 'lucide-react';
-import { ChatMessage } from '@/components/ChatMessage';
-import { ChatInput } from '@/components/ChatInput';
-import { ProductCard, Product } from '@/components/ProductCard';
-import { PriceComparison } from '@/components/PriceComparison';
-import { PurchaseConfirmation } from '@/components/PurchaseConfirmation';
-import { QuickActions } from '@/components/QuickActions';
-import { TypingIndicator } from '@/components/TypingIndicator';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { OnboardingScreen } from '@/screens/OnboardingScreen';
+import { ChatScreen } from '@/screens/ChatScreen';
+import { DealsScreen, DealAlert } from '@/screens/DealsScreen';
+import { DealDetailScreen } from '@/screens/DealDetailScreen';
+import { HistoryScreen, HistoryItem } from '@/screens/HistoryScreen';
+import { ProfileScreen } from '@/screens/ProfileScreen';
+import { BottomNav } from '@/components/BottomNav';
+import { Product } from '@/components/ProductCard';
 
-interface Message {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: string;
-  products?: Product[];
-  comparison?: Product[];
-  confirmation?: Product;
-}
-
-// Mock product data
-const mockProducts: Record<string, Product[]> = {
-  headphones: [
-    {
-      id: 'h1',
-      name: 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
-      price: 348.00,
-      originalPrice: 399.99,
-      platform: 'amazon',
-      rating: 4.8,
-      reviews: 2341,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-      priceChange: 'down',
-      priceChangePercent: 5,
-    },
-    {
-      id: 'h2',
-      name: 'Sony WH-1000XM5 Premium Noise Cancelling',
-      price: 365.90,
-      originalPrice: 399.99,
-      platform: 'shopee',
-      rating: 4.7,
-      reviews: 891,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-    },
-    {
-      id: 'h3',
-      name: 'Sony WH-1000XM5 Wireless Headphones Black',
-      price: 359.00,
-      originalPrice: 399.99,
-      platform: 'lazada',
-      rating: 4.6,
-      reviews: 534,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-    },
-  ],
-  laptop: [
-    {
-      id: 'l1',
-      name: 'MacBook Pro 14" M3 Chip 16GB RAM 512GB SSD',
-      price: 1899.00,
-      platform: 'amazon',
-      rating: 4.9,
-      reviews: 1523,
-      image: 'https://images.unsplash.com/photo-1511385348-a52b4a160dc2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXB0b3AlMjBjb21wdXRlcnxlbnwxfHx8fDE3NjY0OTAwODl8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-    },
-  ],
-};
+type Screen = 'onboarding' | 'chat' | 'deals' | 'deal-detail' | 'history' | 'profile';
+type Tab = 'chat' | 'deals' | 'history';
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [currentScreen, setCurrentScreen] = useState<Screen>('onboarding');
+  const [activeTab, setActiveTab] = useState<Tab>('chat');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Deal alerts state
+  const [deals, setDeals] = useState<DealAlert[]>([
     {
       id: '1',
-      text: "👋 Hi! I'm your AI Shopping Concierge. I can help you search products, compare prices across Shopee, Lazada, and Amazon, set price alerts, and confirm purchases. What are you looking for today?",
-      isUser: false,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      product: {
+        id: 's1',
+        name: 'iPhone 15 Pro Max 256GB Natural Titanium',
+        price: 1199.00,
+        originalPrice: 1299.00,
+        platform: 'shopee',
+        rating: 4.9,
+        reviews: 3421,
+        image: 'https://images.unsplash.com/photo-1741061963569-9d0ef54d10d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbWFydHBob25lJTIwbW9iaWxlfGVufDF8fHx8MTc2NjUwOTIxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+        shipping: 'Free Shipping',
+        inStock: true,
+        priceChange: 'down',
+        priceChangePercent: 8,
+      },
+      targetPrice: 1150.00,
+      createdAt: 'Dec 20, 2024',
+      priceHistory: [
+        { date: '12/18', price: 1299 },
+        { date: '12/19', price: 1249 },
+        { date: '12/20', price: 1229 },
+        { date: '12/21', price: 1199 },
+        { date: '12/22', price: 1199 },
+      ],
+      isActive: true,
+      triggered: false,
+    },
+    {
+      id: '2',
+      product: {
+        id: 'h1',
+        name: 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
+        price: 348.00,
+        originalPrice: 399.99,
+        platform: 'amazon',
+        rating: 4.8,
+        reviews: 2341,
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
+        shipping: 'Free Shipping',
+        inStock: true,
+        priceChange: 'down',
+        priceChangePercent: 5,
+      },
+      targetPrice: 350.00,
+      createdAt: 'Dec 22, 2024',
+      priceHistory: [
+        { date: '12/18', price: 399.99 },
+        { date: '12/19', price: 379.99 },
+        { date: '12/20', price: 365.00 },
+        { date: '12/21', price: 355.00 },
+        { date: '12/22', price: 348.00 },
+      ],
+      isActive: true,
+      triggered: true,
     },
   ]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [showQuickActions, setShowQuickActions] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  
+  const [selectedDeal, setSelectedDeal] = useState<DealAlert | null>(null);
+  
+  // History state
+  const [history, setHistory] = useState<HistoryItem[]>([
+    {
+      id: '1',
+      type: 'purchase',
+      date: 'Today',
+      time: '2:30 PM',
+      product: {
+        id: 'w1',
+        name: 'Apple Watch Series 9 GPS 45mm Midnight Aluminum',
+        price: 429.00,
+        originalPrice: 499.00,
+        platform: 'amazon',
+        rating: 4.7,
+        reviews: 1832,
+        image: 'https://images.unsplash.com/photo-1532435109783-fdb8a2be0baa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbWFydHdhdGNoJTIwZml0bmVzc3xlbnwxfHx8fDE3NjY1MjQ4Njl8MA&ixlib=rb-4.1.0&q=80&w=1080',
+        shipping: 'Free Shipping',
+        inStock: true,
+      },
+      total: 429.00,
+      status: 'completed',
+    },
+    {
+      id: '2',
+      type: 'alert',
+      date: 'Today',
+      time: '10:15 AM',
+      product: {
+        id: 'h1',
+        name: 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
+        price: 348.00,
+        originalPrice: 399.99,
+        platform: 'amazon',
+        rating: 4.8,
+        reviews: 2341,
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
+        shipping: 'Free Shipping',
+        inStock: true,
+      },
+    },
+    {
+      id: '3',
+      type: 'search',
+      date: 'Yesterday',
+      time: '5:45 PM',
+      query: 'wireless headphones',
+    },
+  ]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const unreadDeals = deals.filter((d) => d.triggered).length;
+
+  const handleCompleteOnboarding = () => {
+    setIsAuthenticated(true);
+    setCurrentScreen('chat');
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
-
-  const formatTime = () => {
-    return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab);
+    setCurrentScreen(tab);
   };
 
-  const simulateTyping = (callback: () => void, delay = 1500) => {
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      callback();
-    }, delay);
+  const handleSelectDeal = (deal: DealAlert) => {
+    setSelectedDeal(deal);
+    setCurrentScreen('deal-detail');
   };
 
-  const handleSendMessage = (text: string) => {
-    setShowQuickActions(false);
+  const handleBackFromDealDetail = () => {
+    setSelectedDeal(null);
+    setCurrentScreen('deals');
+  };
+
+  const handleDisableAlert = (dealId: string) => {
+    setDeals((prev) =>
+      prev.map((deal) =>
+        deal.id === dealId ? { ...deal, isActive: false } : deal
+      )
+    );
+    setCurrentScreen('deals');
+    setSelectedDeal(null);
+  };
+
+  const handleBuyFromDeal = (deal: DealAlert) => {
+    // Add to history
+    const newHistoryItem: HistoryItem = {
+      id: Date.now().toString(),
+      type: 'purchase',
+      date: 'Today',
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      product: deal.product,
+      total: deal.product.price,
+      status: 'completed',
+    };
     
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isUser: true,
-      timestamp: formatTime(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-
-    simulateTyping(() => {
-      const lowerText = text.toLowerCase();
-      
-      if (lowerText.includes('headphone') || lowerText.includes('wireless')) {
-        handleProductSearch('headphones');
-      } else if (lowerText.includes('laptop') || lowerText.includes('macbook')) {
-        handleProductSearch('laptop');
-      } else if (lowerText.includes('compare')) {
-        handlePriceComparison();
-      } else {
-        const aiMessage: Message = {
-          id: Date.now().toString(),
-          text: "I can help you search for products, compare prices, or set alerts. Try asking for 'wireless headphones' or 'compare prices'.",
-          isUser: false,
-          timestamp: formatTime(),
-        };
-        setMessages((prev) => [...prev, aiMessage]);
-      }
-    });
+    setHistory((prev) => [newHistoryItem, ...prev]);
+    
+    // Disable the alert
+    handleDisableAlert(deal.id);
+    
+    // Navigate to chat
+    setActiveTab('chat');
+    setCurrentScreen('chat');
   };
 
-  const handleProductSearch = (category: keyof typeof mockProducts) => {
-    const products = mockProducts[category];
-    const aiMessage: Message = {
+  const handlePurchase = (product: Product) => {
+    const newHistoryItem: HistoryItem = {
       id: Date.now().toString(),
-      text: `I found ${products.length} results for your search. Here are the best options:`,
-      isUser: false,
-      timestamp: formatTime(),
-      products,
+      type: 'purchase',
+      date: 'Today',
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      product,
+      total: product.price + (product.shipping === 'Free Shipping' ? 0 : 3.99),
+      status: 'completed',
     };
-    setMessages((prev) => [...prev, aiMessage]);
+    
+    setHistory((prev) => [newHistoryItem, ...prev]);
   };
 
-  const handlePriceComparison = () => {
-    const products = mockProducts.headphones;
-    const aiMessage: Message = {
+  const handleMonitor = (product: Product) => {
+    // Create a new deal alert
+    const newDeal: DealAlert = {
       id: Date.now().toString(),
-      text: "Here's a price comparison for the Sony WH-1000XM5. Amazon currently has the best price!",
-      isUser: false,
-      timestamp: formatTime(),
-      comparison: products,
+      product,
+      targetPrice: product.price * 0.9,
+      createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      priceHistory: [
+        { date: new Date().toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }), price: product.price },
+      ],
+      isActive: true,
+      triggered: false,
     };
-    setMessages((prev) => [...prev, aiMessage]);
+    
+    setDeals((prev) => [newDeal, ...prev]);
+    
+    const newHistoryItem: HistoryItem = {
+      id: Date.now().toString(),
+      type: 'alert',
+      date: 'Today',
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      product,
+    };
+    
+    setHistory((prev) => [newHistoryItem, ...prev]);
   };
 
-  const handleBuyProduct = (product: Product) => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `Great choice! Please review your purchase details:`,
-      isUser: false,
-      timestamp: formatTime(),
-      confirmation: product,
-    };
-    setMessages((prev) => [...prev, aiMessage]);
+  const handleOpenProfile = () => {
+    setCurrentScreen('profile');
   };
 
-  const handleMonitorProduct = (product: Product) => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `✅ Price alert set for "${product.name}"! I'll notify you of any price drops.`,
-      isUser: false,
-      timestamp: formatTime(),
-    };
-    setMessages((prev) => [...prev, aiMessage]);
+  const handleBackFromProfile = () => {
+    setCurrentScreen(activeTab);
   };
 
-  const handleConfirmPurchase = (product: Product) => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `🎉 Purchase confirmed! Your order for ${product.name} has been placed. Is there anything else I can help you with?`,
-      isUser: false,
-      timestamp: formatTime(),
-    };
-    setMessages((prev) => [...prev, aiMessage]);
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentScreen('onboarding');
+    setActiveTab('chat');
   };
 
-  const handleCancelPurchase = () => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: "No problem! The purchase has been cancelled.",
-      isUser: false,
-      timestamp: formatTime(),
-    };
-    setMessages((prev) => [...prev, aiMessage]);
+  const handleSelectHistoryItem = (item: HistoryItem) => {
+    console.log('Selected history item:', item);
   };
 
-  const handleSelectProduct = (product: Product) => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `Would you like to proceed with this purchase?`,
-      isUser: false,
-      timestamp: formatTime(),
-      confirmation: product,
-    };
-    setMessages((prev) => [...prev, aiMessage]);
+  // Render current screen
+  const renderScreen = () => {
+    if (!isAuthenticated) {
+      return <OnboardingScreen onComplete={handleCompleteOnboarding} />;
+    }
+
+    switch (currentScreen) {
+      case 'chat':
+        return (
+          <ChatScreen
+            onPurchase={handlePurchase}
+            onMonitor={handleMonitor}
+            onOpenProfile={handleOpenProfile}
+          />
+        );
+      case 'deals':
+        return <DealsScreen deals={deals} onSelectDeal={handleSelectDeal} />;
+      case 'deal-detail':
+        return selectedDeal ? (
+          <DealDetailScreen
+            deal={selectedDeal}
+            onBack={handleBackFromDealDetail}
+            onDisableAlert={handleDisableAlert}
+            onBuyNow={handleBuyFromDeal}
+          />
+        ) : null;
+      case 'history':
+        return <HistoryScreen history={history} onSelectItem={handleSelectHistoryItem} />;
+      case 'profile':
+        return <ProfileScreen onBack={handleBackFromProfile} onLogout={handleLogout} />;
+      default:
+        return null;
+    }
   };
+
+  const showBottomNav = isAuthenticated && currentScreen !== 'deal-detail' && currentScreen !== 'profile';
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 max-w-md mx-auto shadow-xl overflow-hidden relative border-x border-gray-200">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-4 flex items-center justify-between shadow-lg z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-            <ShoppingBag className="w-6 h-6 text-purple-600" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold">Shopping Concierge</h1>
-            <p className="text-[10px] text-purple-100 uppercase tracking-wider font-semibold">AI Assistant</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-8 w-8">
-            <Bell className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-8 w-8">
-            <Menu className="w-4 h-4" />
-          </Button>
-        </div>
-      </header>
-
-      {/* Chat Messages */}
-      <div 
-        ref={chatContainerRef}
-        className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white/50"
-      >
-        {messages.map((message) => (
-          <div key={message.id}>
-            <ChatMessage
-              message={message.text}
-              isUser={message.isUser}
-              timestamp={message.timestamp}
-            />
-            
-            {message.products && (
-              <div className="grid grid-cols-1 gap-3 mb-4 ml-11">
-                {message.products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onBuy={() => handleBuyProduct(product)}
-                    onMonitor={() => handleMonitorProduct(product)}
-                  />
-                ))}
-              </div>
-            )}
-
-            {message.comparison && (
-              <div className="ml-11 mb-4">
-                <PriceComparison
-                  products={message.comparison}
-                  onSelectProduct={handleSelectProduct}
-                />
-              </div>
-            )}
-
-            {message.confirmation && (
-              <div className="ml-11 mb-4">
-                <PurchaseConfirmation
-                  product={message.confirmation}
-                  onConfirm={() => handleConfirmPurchase(message.confirmation!)}
-                  onCancel={handleCancelPurchase}
-                />
-              </div>
-            )}
-          </div>
-        ))}
-
-        {isTyping && <TypingIndicator />}
-        
-        {showQuickActions && !isTyping && messages.length === 1 && (
-          <QuickActions onActionClick={handleSendMessage} />
-        )}
-
-        <div ref={messagesEndRef} />
+      <div className="flex-1 overflow-hidden">
+        {renderScreen()}
       </div>
-
-      {/* Chat Input */}
-      <ChatInput onSend={handleSendMessage} disabled={isTyping} />
+      
+      {showBottomNav && (
+        <BottomNav
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          unreadDeals={unreadDeals}
+        />
+      )}
     </div>
   );
 }
