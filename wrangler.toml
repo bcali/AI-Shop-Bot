@@ -1,0 +1,14 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "ai-personal-shopping-concierge"
+compatibility_date = "2024-12-24"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".next"
+
+[vars]
+# Add any public environment variables here
+
+[deployment]
+# Configuration for deployments
+# You can set the domain here if managing via Wrangler, 
+# but usually it's easier via the Cloudflare Dashboard for Pages.
+

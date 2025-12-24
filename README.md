@@ -44,6 +44,25 @@ To pull the latest changes from Confluence:
 ### 2. Automated Sync (Repo -> Confluence)
 Pushes to `main` that modify `docs/PRD.md` automatically update Confluence. Ensure GitHub secrets `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN`, and `CONFLUENCE_BASE_URL` are configured.
 
+## Cloudflare Deployment (`autocart.win`)
+The project is configured for deployment on **Cloudflare Pages**.
+
+### 1. Initial Setup
+1. Log in to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. Navigate to **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
+3. Select the `AI-Shop-Bot` repository.
+
+### 2. Build Settings
+- **Framework preset**: `Next.js`
+- **Build command**: `npm run build`
+- **Build output directory**: `.next`
+- **Root directory**: `/` (default)
+
+### 3. Custom Domain
+1. Once deployed, go to the **Custom domains** tab in your Pages project.
+2. Click **Set up a custom domain**.
+3. Enter `autocart.win` and follow the instructions to point your DNS to Cloudflare.
+
 ## Roadmap
 - [x] Initial Repo Setup & PRD Sync
 - [x] Next.js App Initialization (Figma Base)
