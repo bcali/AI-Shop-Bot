@@ -1,4 +1,0 @@
-name = "shopbot"
-compatibility_date = "2024-12-24"
-compatibility_flags = ["nodejs_compat"]
-# Note: For Next.js, Cloudflare Pages is highly recommended over Workers.
