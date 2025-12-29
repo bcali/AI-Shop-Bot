@@ -153,10 +153,6 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
 
   const handleProductSearch = (category: keyof typeof mockProducts) => {
     const products = mockProducts[category];
-    const categoryNames: Record<string, string> = {
-      headphones: 'wireless headphones',
-      laptop: 'laptops',
-    };
 
     const aiMessage: Message = {
       id: Date.now().toString(),

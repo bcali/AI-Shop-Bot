@@ -1,4 +1,4 @@
-import { Package, ShoppingBag, Bell, ChevronRight, Search, Clock } from 'lucide-react';
+import { ShoppingBag, Bell, ChevronRight, Search, Clock } from 'lucide-react';
 import { Product } from '../components/ProductCard';
 
 export interface HistoryItem {
@@ -144,7 +144,7 @@ export function HistoryScreen({ history, onSelectItem }: HistoryScreenProps) {
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider text-blue-500">New Search</span>
                             <span className="text-[10px] text-gray-400 font-medium">{item.time}</span>
                           </div>
-                          <p className="text-sm font-bold text-gray-900 italic">"{item.query}"</p>
+                          <p className="text-sm font-bold text-gray-900 italic">&quot;{item.query}&quot;</p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-300" />
                       </div>

@@ -1,4 +1,4 @@
-import { TrendingDown, ChevronRight, Bell as BellIcon } from 'lucide-react';
+import { TrendingDown, ChevronRight, Bell as BellIcon, Zap } from 'lucide-react';
 import { Product } from '../components/ProductCard';
 
 export interface DealAlert {
@@ -157,7 +157,7 @@ export function DealsScreen({ deals, onSelectDeal }: DealsScreenProps) {
             </p>
             <div className="bg-blue-50 rounded-2xl p-4 text-left border border-blue-100 max-w-sm">
               <p className="text-xs text-blue-800 leading-relaxed">
-                <span className="font-bold mr-1">💡 Tip:</span> Search for a product in the chat and click <span className="font-bold">"Monitor"</span> to set up your first alert!
+                <span className="font-bold mr-1">💡 Tip:</span> Search for a product in the chat and click <span className="font-bold">&quot;Monitor&quot;</span> to set up your first alert!
               </p>
             </div>
           </div>
@@ -166,6 +166,3 @@ export function DealsScreen({ deals, onSelectDeal }: DealsScreenProps) {
     </div>
   );
 }
-
-import { Zap } from 'lucide-react';
-
