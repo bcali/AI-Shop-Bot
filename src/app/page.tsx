@@ -9,6 +9,7 @@ import { HistoryScreen, HistoryItem } from '@/screens/HistoryScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { BottomNav } from '@/components/BottomNav';
 import { Product } from '@/components/ProductCard';
+import { ShoppingBackground } from '@/components/ShoppingBackground';
 
 type Screen = 'onboarding' | 'chat' | 'deals' | 'deal-detail' | 'history' | 'profile';
 type Tab = 'chat' | 'deals' | 'history';
@@ -281,7 +282,8 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 max-w-md mx-auto shadow-xl overflow-hidden relative border-x border-gray-200">
-      <div className="flex-1 overflow-hidden">
+      <ShoppingBackground />
+      <div className="flex-1 overflow-hidden relative z-10">
         {renderScreen()}
       </div>
       

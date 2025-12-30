@@ -34,7 +34,7 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-transparent">
       {/* Header */}
       <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center gap-3 shadow-lg safe-area-inset-top shrink-0">
         <Button
@@ -184,7 +184,7 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
             Sign Out
           </Button>
           <div className="mt-6 text-[10px] font-bold text-gray-300 text-center uppercase tracking-widest">
-            Version 2.0.0
+            Version 11
           </div>
         </div>
       </div>

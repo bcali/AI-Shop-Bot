@@ -62,7 +62,7 @@ export function HistoryScreen({ history, onSelectItem }: HistoryScreenProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-transparent">
       {/* Header */}
       <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 shadow-lg safe-area-inset-top shrink-0">
         <h2 className="text-lg font-bold">Activity History</h2>

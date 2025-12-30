@@ -103,7 +103,7 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-transparent">
       {/* Header */}
       <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center justify-between shadow-lg safe-area-inset-top shrink-0">
         <div className="flex items-center gap-2">
