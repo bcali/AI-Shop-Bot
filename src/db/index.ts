@@ -4,10 +4,11 @@ import * as schema from "./schema";
 
 const connectionString = process.env.DATABASE_URL!;
 
-// For edge runtimes (Cloudflare Pages), we usually use drizzle-orm/postgres-js or drizzle-orm/neon-http
-// Since we are using standard PostgreSQL driver here, it's suitable for Node.js runtimes.
-// If using Neon, we could switch to neon-http for better edge compatibility.
-
-const client = postgres(connectionString);
+// For Supabase + Cloudflare Pages, we use postgres-js.
+// We use ssl: 'require' for secure connection to Supabase.
+const client = postgres(connectionString, { 
+  prepare: false,
+  ssl: 'require' 
+});
 export const db = drizzle(client, { schema });
 

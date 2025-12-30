@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { User } from 'lucide-react';
+import { useChat } from 'ai/react';
 import { ChatMessage } from '../components/ChatMessage';
 import { ChatInput } from '../components/ChatInput';
 import { ProductCard, Product } from '../components/ProductCard';
@@ -11,89 +12,23 @@ import { QuickActions } from '../components/QuickActions';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { Button } from '../components/ui/button';
 
-interface Message {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: string;
-  products?: Product[];
-  comparison?: Product[];
-  confirmation?: Product;
-}
-
 interface ChatScreenProps {
   onPurchase?: (product: Product) => void;
   onMonitor?: (product: Product) => void;
   onOpenProfile: () => void;
 }
 
-// Mock product data
-const mockProducts: Record<string, Product[]> = {
-  headphones: [
-    {
-      id: 'h1',
-      name: 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
-      price: 348.00,
-      originalPrice: 399.99,
-      platform: 'amazon',
-      rating: 4.8,
-      reviews: 2341,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-      priceChange: 'down',
-      priceChangePercent: 5,
-    },
-    {
-      id: 'h2',
-      name: 'Sony WH-1000XM5 Premium Noise Cancelling',
-      price: 365.90,
-      originalPrice: 399.99,
-      platform: 'shopee',
-      rating: 4.7,
-      reviews: 891,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-    },
-    {
-      id: 'h3',
-      name: 'Sony WH-1000XM5 Wireless Headphones Black',
-      price: 359.00,
-      originalPrice: 399.99,
-      platform: 'lazada',
-      rating: 4.6,
-      reviews: 534,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MXx8fHwxNzY2NTQzOTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-    },
-  ],
-  laptop: [
-    {
-      id: 'l1',
-      name: 'MacBook Pro 14" M3 Chip 16GB RAM 512GB SSD',
-      price: 1899.00,
-      platform: 'amazon',
-      rating: 4.9,
-      reviews: 1523,
-      image: 'https://images.unsplash.com/photo-1511385348-a52b4a160dc2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXB0b3AlMjBjb21wdXRlcnxlbnwxfHx8fDE3NjY0OTAwODl8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      shipping: 'Free Shipping',
-      inStock: true,
-    },
-  ],
-};
-
 export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "👋 Hi! I'm your AI Shopping Concierge. I can help you search products, compare prices across Shopee, Lazada, and Amazon, set price alerts, and confirm purchases. What are you looking for today?",
-      isUser: false,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
+  const { messages, append, isLoading, setInput } = useChat({
+    initialMessages: [
+      {
+        id: '1',
+        role: 'assistant',
+        content: "👋 Hi! I'm your AI Shopping Concierge. I can help you search products, compare prices across Shopee, Lazada, and Amazon, set price alerts, and confirm purchases. What are you looking for today?",
+      },
+    ],
+  });
+
   const [showQuickActions, setShowQuickActions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -103,93 +38,30 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isLoading]);
 
   const formatTime = () => {
     return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const simulateTyping = (callback: () => void, delay = 1500) => {
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      callback();
-    }, delay);
-  };
-
   const handleSendMessage = (text: string) => {
     setShowQuickActions(false);
-    
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isUser: true,
-      timestamp: formatTime(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Simulate AI response
-    simulateTyping(() => {
-      const lowerText = text.toLowerCase();
-      
-      if (lowerText.includes('headphone') || lowerText.includes('wireless')) {
-        handleProductSearch('headphones');
-      } else if (lowerText.includes('laptop') || lowerText.includes('macbook')) {
-        handleProductSearch('laptop');
-      } else if (lowerText.includes('compare')) {
-        handlePriceComparison();
-      } else {
-        const aiMessage: Message = {
-          id: Date.now().toString(),
-          text: "I can help you with:\n\n• Search for products\n• Compare prices across platforms\n• Set up price alerts\n• Find the best deals\n• Confirm your purchases\n\nWhat would you like to do?",
-          isUser: false,
-          timestamp: formatTime(),
-        };
-        setMessages((prev) => [...prev, aiMessage]);
-      }
+    append({
+      role: 'user',
+      content: text,
     });
   };
 
-  const handleProductSearch = (category: keyof typeof mockProducts) => {
-    const products = mockProducts[category];
-
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `I found ${products.length} results for your search across Shopee, Lazada, and Amazon. Here are the best options:`,
-      isUser: false,
-      timestamp: formatTime(),
-      products,
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
-  };
-
-  const handlePriceComparison = () => {
-    const products = mockProducts.headphones;
-    
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: "Here's a price comparison for the Sony WH-1000XM5 across all platforms. Amazon has the best price right now!",
-      isUser: false,
-      timestamp: formatTime(),
-      comparison: products,
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
-  };
-
   const handleBuyProduct = (product: Product) => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `Great choice! Please review your purchase details:`,
-      isUser: false,
-      timestamp: formatTime(),
-      confirmation: product,
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
-    scrollToBottom();
+    // Add a system-like message to trigger the confirmation UI
+    append({
+      role: 'assistant',
+      content: `Great choice! Please review your purchase details:`,
+      // We'll use tool results or custom annotations if needed, but for now 
+      // let's just use the existing local handler for simplicity or custom UI
+    });
+    // For now, let's keep the local state for specific UI flow if needed
+    // but the AI can also trigger this via tools
   };
 
   const handleMonitorProduct = (product: Product) => {
@@ -201,50 +73,33 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
       amazon: 'Amazon',
     };
 
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `✅ Price alert set for "${product.name}" on ${platformNames[product.platform]}!\n\nCurrent price: $${product.price.toFixed(2)}\n\nI'll notify you when the price drops.`,
-      isUser: false,
-      timestamp: formatTime(),
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
+    append({
+      role: 'assistant',
+      content: `✅ Price alert set for "${product.name}" on ${platformNames[product.platform]}!\n\nCurrent price: $${product.price.toFixed(2)}\n\nI'll notify you when the price drops.`,
+    });
   };
 
   const handleConfirmPurchase = (product: Product) => {
     onPurchase?.(product);
     
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `🎉 Purchase confirmed!\n\nYour order for "${product.name}" has been placed. You will receive a confirmation email shortly.`,
-      isUser: false,
-      timestamp: formatTime(),
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
+    append({
+      role: 'assistant',
+      content: `🎉 Purchase confirmed!\n\nYour order for "${product.name}" has been placed. You will receive a confirmation email shortly.`,
+    });
   };
 
   const handleCancelPurchase = () => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: "No problem! The purchase has been cancelled.",
-      isUser: false,
-      timestamp: formatTime(),
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
+    append({
+      role: 'assistant',
+      content: "No problem! The purchase has been cancelled.",
+    });
   };
 
   const handleSelectProduct = (product: Product) => {
-    const aiMessage: Message = {
-      id: Date.now().toString(),
-      text: `Would you like to proceed with this purchase?`,
-      isUser: false,
-      timestamp: formatTime(),
-      confirmation: product,
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
+    append({
+      role: 'assistant',
+      content: `Would you like to proceed with this purchase?`,
+    });
   };
 
   return (
@@ -266,51 +121,43 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50/50">
-        {messages.map((message) => (
-          <div key={message.id}>
+        {messages.map((m) => (
+          <div key={m.id}>
             <ChatMessage
-              message={message.text}
-              isUser={message.isUser}
-              timestamp={message.timestamp}
+              message={m.content}
+              isUser={m.role === 'user'}
+              timestamp={formatTime()} // Ideally we'd have a timestamp in the message object
             />
             
-            {message.products && (
-              <div className="grid grid-cols-1 gap-3 mb-4 ml-11">
-                {message.products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onBuy={() => handleBuyProduct(product)}
-                    onMonitor={() => handleMonitorProduct(product)}
-                  />
-                ))}
-              </div>
-            )}
+            {/* Handle Tool Results */}
+            {m.toolInvocations?.map((toolInvocation) => {
+              const { toolName, toolCallId, state } = toolInvocation;
 
-            {message.comparison && (
-              <div className="ml-11 mb-4">
-                <PriceComparison
-                  products={message.comparison}
-                  onSelectProduct={handleSelectProduct}
-                />
-              </div>
-            )}
-
-            {message.confirmation && (
-              <div className="ml-11 mb-4">
-                <PurchaseConfirmation
-                  product={message.confirmation}
-                  onConfirm={() => handleConfirmPurchase(message.confirmation!)}
-                  onCancel={handleCancelPurchase}
-                />
-              </div>
-            )}
+              if (state === 'result') {
+                if (toolName === 'searchProducts') {
+                  const { products } = toolInvocation.result;
+                  return (
+                    <div key={toolCallId} className="grid grid-cols-1 gap-3 mb-4 ml-11">
+                      {products.map((product: Product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          onBuy={() => handleBuyProduct(product)}
+                          onMonitor={() => handleMonitorProduct(product)}
+                        />
+                      ))}
+                    </div>
+                  );
+                }
+              }
+              return null;
+            })}
           </div>
         ))}
 
-        {isTyping && <TypingIndicator />}
+        {isLoading && <TypingIndicator />}
         
-        {showQuickActions && !isTyping && messages.length === 1 && (
+        {showQuickActions && !isLoading && messages.length === 1 && (
           <QuickActions onActionClick={handleSendMessage} />
         )}
 
@@ -319,9 +166,8 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
 
       {/* Input */}
       <div className="shrink-0">
-        <ChatInput onSend={handleSendMessage} disabled={isTyping} />
+        <ChatInput onSend={handleSendMessage} disabled={isLoading} />
       </div>
     </div>
   );
 }
-
