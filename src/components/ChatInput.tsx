@@ -27,33 +27,33 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-3 pb-8">
-      <div className="flex gap-2 items-end">
-        <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 flex items-center h-10">
+    <div className="bg-md-surface-container-high p-4 pb-10 safe-area-inset-bottom border-t border-md-outline-variant elevation-3">
+      <div className="flex gap-3 items-center">
+        <div className="flex-1 bg-md-surface-container-highest rounded-md-full px-5 py-2.5 flex items-center h-12 elevation-1">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask me anything..."
+            placeholder="Search products or ask a question..."
             disabled={disabled}
-            className="flex-1 bg-transparent outline-none text-sm placeholder:text-gray-500"
+            className="flex-1 bg-transparent outline-none text-sm placeholder:text-md-on-surface-variant font-medium"
           />
           <button 
             type="button"
             onClick={() => {/* Voice input placeholder */}}
-            className="text-gray-400 hover:text-gray-600 ml-2"
+            className="text-md-on-surface-variant hover:text-md-primary ml-2 state-layer p-2 rounded-full"
           >
-            <Mic className="w-4 h-4" />
+            <Mic className="w-5 h-5" />
           </button>
         </div>
         <Button
           onClick={handleSend}
           disabled={!input.trim() || disabled}
           size="icon"
-          className="rounded-full w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white shrink-0"
+          className="rounded-md-full w-12 h-12 bg-md-primary hover:bg-md-primary/90 text-md-on-primary shrink-0 elevation-1 state-layer"
         >
-          <Send className="w-4 h-4" />
+          <Send className="w-5 h-5" />
         </Button>
       </div>
     </div>

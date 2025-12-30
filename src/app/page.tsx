@@ -184,26 +184,26 @@ export default function Home() {
     setCurrentScreen('chat');
   };
 
-  const handlePurchase = (product: Product) => {
+  const handlePurchase = (product: Product, total?: number) => {
     const newHistoryItem: HistoryItem = {
       id: Date.now().toString(),
       type: 'purchase',
       date: 'Today',
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       product,
-      total: product.price + (product.shipping === 'Free Shipping' ? 0 : 3.99),
+      total: total || (product.price + (product.shipping === 'Free Shipping' ? 0 : 3.99)),
       status: 'completed',
     };
     
     setHistory((prev) => [newHistoryItem, ...prev]);
   };
 
-  const handleMonitor = (product: Product) => {
+  const handleMonitor = (product: Product, targetPrice: number) => {
     // Create a new deal alert
     const newDeal: DealAlert = {
       id: Date.now().toString(),
       product,
-      targetPrice: product.price * 0.9,
+      targetPrice,
       createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       priceHistory: [
         { date: new Date().toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }), price: product.price },
@@ -281,8 +281,7 @@ export default function Home() {
   const showBottomNav = isAuthenticated && currentScreen !== 'deal-detail' && currentScreen !== 'profile';
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 max-w-md mx-auto shadow-xl overflow-hidden relative border-x border-gray-200">
-      <ShoppingBackground />
+    <div className="h-screen flex flex-col bg-md-background max-w-md mx-auto shadow-xl overflow-hidden relative border-x border-md-outline-variant">
       <div className="flex-1 overflow-hidden relative z-10">
         {renderScreen()}
       </div>

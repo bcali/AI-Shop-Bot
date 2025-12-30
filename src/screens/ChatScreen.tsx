@@ -8,18 +8,20 @@ import { ChatInput } from '../components/ChatInput';
 import { ProductCard, Product } from '../components/ProductCard';
 import { PriceComparison } from '../components/PriceComparison';
 import { PurchaseConfirmation } from '../components/PurchaseConfirmation';
+import { PurchaseSuccess } from '../components/PurchaseSuccess';
+import { PriceTargetModal } from '../components/PriceTargetModal';
 import { QuickActions } from '../components/QuickActions';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { Button } from '../components/ui/button';
 
 interface ChatScreenProps {
-  onPurchase?: (product: Product) => void;
-  onMonitor?: (product: Product) => void;
+  onPurchase?: (product: Product, total: number) => void;
+  onMonitor?: (product: Product, targetPrice: number) => void;
   onOpenProfile: () => void;
 }
 
 export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenProps) {
-  const { messages, append, isLoading, setInput } = useChat({
+  const { messages, append, isLoading } = useChat({
     initialMessages: [
       {
         id: '1',
@@ -30,6 +32,11 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
   });
 
   const [showQuickActions, setShowQuickActions] = useState(true);
+  const [showPriceTargetModal, setShowPriceTargetModal] = useState(false);
+  const [selectedProductForMonitor, setSelectedProductForMonitor] = useState<Product | null>(null);
+  const [confirmationProduct, setConfirmationProduct] = useState<Product | null>(null);
+  const [purchaseSuccess, setPurchaseSuccess] = useState<{product: Product, orderNumber: string, total: number} | null>(null);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -38,7 +45,7 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading, confirmationProduct, purchaseSuccess]);
 
   const formatTime = () => {
     return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -52,81 +59,87 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
     });
   };
 
-  const handleBuyProduct = (product: Product) => {
-    // Add a system-like message to trigger the confirmation UI
-    append({
-      role: 'assistant',
-      content: `Great choice! Please review your purchase details:`,
-      // We'll use tool results or custom annotations if needed, but for now 
-      // let's just use the existing local handler for simplicity or custom UI
-    });
-    // For now, let's keep the local state for specific UI flow if needed
-    // but the AI can also trigger this via tools
+  const handleReviewPurchase = (product: Product) => {
+    setConfirmationProduct(product);
+    setPurchaseSuccess(null);
   };
 
-  const handleMonitorProduct = (product: Product) => {
-    onMonitor?.(product);
-    
-    const platformNames = {
-      shopee: 'Shopee',
-      lazada: 'Lazada',
-      amazon: 'Amazon',
-    };
-
-    append({
-      role: 'assistant',
-      content: `✅ Price alert set for "${product.name}" on ${platformNames[product.platform]}!\n\nCurrent price: $${product.price.toFixed(2)}\n\nI'll notify you when the price drops.`,
-    });
+  const handleMonitorClick = (product: Product) => {
+    setSelectedProductForMonitor(product);
+    setShowPriceTargetModal(true);
   };
 
-  const handleConfirmPurchase = (product: Product) => {
-    onPurchase?.(product);
-    
-    append({
-      role: 'assistant',
-      content: `🎉 Purchase confirmed!\n\nYour order for "${product.name}" has been placed. You will receive a confirmation email shortly.`,
-    });
+  const handleConfirmPriceTarget = (targetPrice: number) => {
+    if (selectedProductForMonitor) {
+      onMonitor?.(selectedProductForMonitor, targetPrice);
+      setShowPriceTargetModal(false);
+      
+      const platformNames = {
+        shopee: 'Shopee',
+        lazada: 'Lazada',
+        amazon: 'Amazon',
+      };
+
+      append({
+        role: 'assistant',
+        content: `✅ Price alert created!\n\nProduct: ${selectedProductForMonitor.name}\nPlatform: ${platformNames[selectedProductForMonitor.platform]}\nCurrent Price: $${selectedProductForMonitor.price.toFixed(2)}\nTarget Price: $${targetPrice.toFixed(2)}\n\nI'll notify you when the price drops to or below $${targetPrice.toFixed(2)}. You can view all your alerts in the Deals tab.`,
+      });
+      setSelectedProductForMonitor(null);
+    }
+  };
+
+  const handleConfirmPurchase = () => {
+    if (confirmationProduct) {
+      const total = confirmationProduct.price + (confirmationProduct.shipping === 'Free Shipping' ? 0 : 3.99);
+      const orderNumber = `ORD-${Date.now().toString().slice(-8)}`;
+      
+      onPurchase?.(confirmationProduct, total);
+      setPurchaseSuccess({ product: confirmationProduct, orderNumber, total });
+      setConfirmationProduct(null);
+    }
   };
 
   const handleCancelPurchase = () => {
+    setConfirmationProduct(null);
     append({
       role: 'assistant',
-      content: "No problem! The purchase has been cancelled.",
+      content: "No problem! The purchase has been cancelled. Let me know if you'd like to look at other options.",
     });
   };
 
-  const handleSelectProduct = (product: Product) => {
+  const handleContinueShopping = () => {
+    setPurchaseSuccess(null);
     append({
       role: 'assistant',
-      content: `Would you like to proceed with this purchase?`,
+      content: "Great! What else can I help you find today? 🛍️",
     });
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent">
+    <div className="flex flex-col h-full bg-md-background">
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center justify-between shadow-lg safe-area-inset-top shrink-0">
+      <header className="bg-md-primary text-md-on-primary px-4 py-3 flex items-center justify-between elevation-2 safe-area-inset-top shrink-0">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-bold">Chat</h2>
+          <h2 className="text-lg font-medium tracking-wide">Chat</h2>
         </div>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-white hover:bg-white/20 rounded-full h-10 w-10"
+          className="text-md-on-primary hover:bg-md-on-primary/12 rounded-full h-10 w-10 state-layer"
           onClick={onOpenProfile}
         >
-          <User className="w-6 h-6" />
+          <User className="w-5 h-5" />
         </Button>
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50/50">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.map((m) => (
           <div key={m.id}>
             <ChatMessage
               message={m.content}
               isUser={m.role === 'user'}
-              timestamp={formatTime()} // Ideally we'd have a timestamp in the message object
+              timestamp={formatTime()}
             />
             
             {/* Handle Tool Results */}
@@ -142,8 +155,8 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
                         <ProductCard
                           key={product.id}
                           product={product}
-                          onBuy={() => handleBuyProduct(product)}
-                          onMonitor={() => handleMonitorProduct(product)}
+                          onBuy={() => handleReviewPurchase(product)}
+                          onMonitor={() => handleMonitorClick(product)}
                         />
                       ))}
                     </div>
@@ -154,6 +167,27 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
             })}
           </div>
         ))}
+
+        {confirmationProduct && (
+          <div className="ml-11 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <PurchaseConfirmation
+              product={confirmationProduct}
+              onConfirm={handleConfirmPurchase}
+              onCancel={handleCancelPurchase}
+            />
+          </div>
+        )}
+
+        {purchaseSuccess && (
+          <div className="ml-11 mb-4">
+            <PurchaseSuccess
+              product={purchaseSuccess.product}
+              orderNumber={purchaseSuccess.orderNumber}
+              total={purchaseSuccess.total}
+              onContinueShopping={handleContinueShopping}
+            />
+          </div>
+        )}
 
         {isLoading && <TypingIndicator />}
         
@@ -168,6 +202,15 @@ export function ChatScreen({ onPurchase, onMonitor, onOpenProfile }: ChatScreenP
       <div className="shrink-0">
         <ChatInput onSend={handleSendMessage} disabled={isLoading} />
       </div>
+
+      {/* Price Target Modal */}
+      {showPriceTargetModal && selectedProductForMonitor && (
+        <PriceTargetModal
+          product={selectedProductForMonitor}
+          onConfirm={handleConfirmPriceTarget}
+          onCancel={() => setShowPriceTargetModal(false)}
+        />
+      )}
     </div>
   );
 }

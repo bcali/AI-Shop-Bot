@@ -21,7 +21,7 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
       items: [
         { icon: User, label: 'Personal Information', value: 'John Doe' },
         { icon: Globe, label: 'Language', value: 'English' },
-        { icon: Palette, label: 'Theme', value: 'Light' },
+        { icon: Palette, label: 'Theme', value: 'Material You (Light)' },
       ],
     },
     {
@@ -34,60 +34,60 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-transparent">
+    <div className="flex flex-col h-full bg-md-background">
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center gap-3 shadow-lg safe-area-inset-top shrink-0">
+      <header className="bg-md-primary text-md-on-primary px-4 py-3 flex items-center gap-3 elevation-2 safe-area-inset-top shrink-0">
         <Button
           variant="ghost"
           size="icon"
-          className="text-white hover:bg-white/20 -ml-2 rounded-full h-10 w-10"
+          className="text-md-on-primary hover:bg-md-on-primary/12 -ml-2 rounded-full h-10 w-10 state-layer"
           onClick={onBack}
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h2 className="text-lg font-bold flex-1">Profile & Settings</h2>
+        <h2 className="text-lg font-medium tracking-wide flex-1">Profile & Settings</h2>
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-8">
+      <div className="flex-1 overflow-y-auto pb-12">
         {/* Profile Card */}
-        <div className="bg-white p-6 mb-4 shadow-sm border-b border-gray-100">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-inner relative border-4 border-white">
-              <span className="text-white text-2xl font-black">JD</span>
-              <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-2 border-white" />
+        <div className="bg-md-surface-container-low p-6 mb-4 elevation-1 border-b border-md-outline-variant">
+          <div className="flex items-center gap-5 mb-8 mt-2">
+            <div className="w-24 h-24 bg-gradient-to-br from-md-primary to-md-secondary-container rounded-md-full flex items-center justify-center elevation-2 relative border-4 border-md-surface">
+              <span className="text-md-on-primary text-3xl font-black">JD</span>
+              <div className="absolute bottom-1 right-1 w-6 h-6 bg-success rounded-full border-4 border-md-surface elevation-1" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">John Doe</h3>
-              <p className="text-gray-500 text-sm">john.doe@example.com</p>
+              <h3 className="text-2xl font-black text-md-on-surface tracking-tight">John Doe</h3>
+              <p className="text-md-on-surface-variant text-sm font-medium">john.doe@example.com</p>
             </div>
           </div>
           
-          <div className="grid grid-cols-3 gap-2 pt-6 border-t border-gray-100">
+          <div className="grid grid-cols-3 gap-3 pt-6 border-t border-md-outline-variant/50">
             <div className="text-center">
-              <div className="text-lg font-black text-purple-600">12</div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Purchases</div>
+              <div className="text-xl font-black text-md-primary">12</div>
+              <div className="text-[10px] font-black text-md-on-surface-variant uppercase tracking-widest">Orders</div>
             </div>
-            <div className="text-center border-x border-gray-100">
-              <div className="text-lg font-black text-purple-600">5</div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Alerts</div>
+            <div className="text-center border-x border-md-outline-variant/50">
+              <div className="text-xl font-black text-md-primary">5</div>
+              <div className="text-[10px] font-black text-md-on-surface-variant uppercase tracking-widest">Alerts</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-black text-purple-600">$284</div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Saved</div>
+              <div className="text-xl font-black text-success">$284</div>
+              <div className="text-[10px] font-black text-md-on-surface-variant uppercase tracking-widest">Saved</div>
             </div>
           </div>
         </div>
 
         {/* Notifications */}
-        <div className="bg-white p-5 mb-4 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Notifications</h3>
+        <div className="bg-md-surface-container p-6 mb-4 elevation-1 border-y border-md-outline-variant">
+          <h3 className="text-[10px] font-black text-md-primary uppercase tracking-[0.2em] mb-6">Notifications</h3>
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm font-bold text-gray-800 mb-0.5">Push Notifications</div>
-                <div className="text-[10px] text-gray-500">Receive alerts and updates</div>
+                <div className="text-sm font-bold text-md-on-surface mb-1">Push Notifications</div>
+                <div className="text-[10px] font-medium text-md-on-surface-variant opacity-70">Receive alerts and order updates</div>
               </div>
               <Switch
                 checked={notifications}
@@ -97,24 +97,12 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
 
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm font-bold text-gray-800 mb-0.5">Price Drop Alerts</div>
-                <div className="text-[10px] text-gray-500">When monitored prices drop</div>
+                <div className="text-sm font-bold text-md-on-surface mb-1">Price Drop Alerts</div>
+                <div className="text-[10px] font-medium text-md-on-surface-variant opacity-70">When monitored prices drop</div>
               </div>
               <Switch
                 checked={priceDrops}
                 onCheckedChange={setPriceDrops}
-                disabled={!notifications}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-bold text-gray-800 mb-0.5">Restock Alerts</div>
-                <div className="text-[10px] text-gray-500">When items come back in stock</div>
-              </div>
-              <Switch
-                checked={restockAlerts}
-                onCheckedChange={setRestockAlerts}
                 disabled={!notifications}
               />
             </div>
@@ -123,24 +111,24 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
 
         {/* Settings Sections */}
         {settingsSections.map((section) => (
-          <div key={section.title} className="bg-white p-5 mb-4 shadow-sm">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">{section.title}</h3>
-            <div className="space-y-4">
+          <div key={section.title} className="bg-md-surface-container p-6 mb-4 elevation-1 border-y border-md-outline-variant">
+            <h3 className="text-[10px] font-black text-md-primary uppercase tracking-[0.2em] mb-6">{section.title}</h3>
+            <div className="space-y-6">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.label}
-                    className="w-full flex items-center gap-4 py-1 active:bg-gray-50 rounded-lg group transition-colors"
+                    className="w-full flex items-center gap-5 py-1 active:bg-md-surface-variant/20 rounded-md-m group transition-all state-layer"
                   >
-                    <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0 group-active:scale-90 transition-transform">
-                      <Icon className="w-5 h-5 text-purple-600" />
+                    <div className="w-12 h-12 bg-md-primary-container text-md-primary rounded-md-xl flex items-center justify-center flex-shrink-0 elevation-1 group-active:elevation-0 transition-all">
+                      <Icon className="w-6 h-6" />
                     </div>
                     <div className="flex-1 text-left min-w-0">
-                      <div className="text-sm font-bold text-gray-800 mb-0.5">{item.label}</div>
-                      <div className="text-[10px] font-medium text-gray-500 truncate">{item.value}</div>
+                      <div className="text-sm font-bold text-md-on-surface mb-1">{item.label}</div>
+                      <div className="text-[10px] font-black text-md-on-surface-variant uppercase tracking-widest truncate">{item.value}</div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                    <ChevronRight className="w-5 h-5 text-md-outline flex-shrink-0 mr-1" />
                   </button>
                 );
               })}
@@ -149,24 +137,24 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
         ))}
 
         {/* Connected Platforms */}
-        <div className="bg-white p-5 mb-4 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Connected Platforms</h3>
-          <div className="space-y-4">
+        <div className="bg-md-surface-container p-6 mb-4 elevation-1 border-y border-md-outline-variant">
+          <h3 className="text-[10px] font-black text-md-primary uppercase tracking-[0.2em] mb-6">Marketplaces</h3>
+          <div className="space-y-5">
             {[
-              { name: 'Shopee', color: 'bg-orange-500', connected: true },
-              { name: 'Lazada', color: 'bg-blue-600', connected: true },
-              { name: 'Amazon', color: 'bg-yellow-500', connected: true },
+              { name: 'Shopee', color: 'bg-shopee', connected: true },
+              { name: 'Lazada', color: 'bg-lazada', connected: true },
+              { name: 'Amazon', color: 'bg-amazon', connected: true },
             ].map((platform) => (
-              <div key={platform.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 ${platform.color} rounded-xl flex items-center justify-center shadow-sm`}>
-                    <span className="text-white text-xs font-black">{platform.name[0]}</span>
+              <div key={platform.name} className="flex items-center justify-between p-1">
+                <div className="flex items-center gap-5">
+                  <div className={`w-12 h-12 ${platform.color} rounded-md-xl flex items-center justify-center elevation-1 border border-white/20`}>
+                    <span className="text-white text-lg font-black">{platform.name[0]}</span>
                   </div>
-                  <span className="text-sm font-bold text-gray-800">{platform.name}</span>
+                  <span className="text-sm font-black text-md-on-surface uppercase tracking-widest">{platform.name}</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-full">
-                  <div className="w-1 h-1 rounded-full bg-green-500" />
-                  <span className="text-[8px] font-black text-green-600 uppercase tracking-widest">Active</span>
+                <div className="flex items-center gap-2 bg-success/10 px-3 py-1.5 rounded-md-full border border-success/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                  <span className="text-[9px] font-black text-success uppercase tracking-widest">Linked</span>
                 </div>
               </div>
             ))}
@@ -174,17 +162,17 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
         </div>
 
         {/* Logout Button */}
-        <div className="px-4 mt-8">
+        <div className="px-6 mt-10">
           <Button
             onClick={onLogout}
             variant="outline"
-            className="w-full h-14 rounded-2xl font-bold text-red-500 border-red-100 bg-red-50/30 hover:bg-red-50 active:scale-[0.98] transition-all"
+            className="w-full h-14 rounded-md-full font-black text-md-error border-md-error/30 bg-md-error-container/10 hover:bg-md-error-container/20 active:elevation-0 transition-all uppercase tracking-[0.2em] elevation-1"
           >
             <LogOut className="w-5 h-5 mr-3" />
             Sign Out
           </Button>
-          <div className="mt-6 text-[10px] font-bold text-gray-300 text-center uppercase tracking-widest">
-            Version 11
+          <div className="mt-8 text-[10px] font-black text-md-on-surface-variant text-center uppercase tracking-[0.3em] opacity-40">
+            Version 11 • MD3-PWA
           </div>
         </div>
       </div>

@@ -30,35 +30,42 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600">
+    <div className="h-screen flex flex-col bg-md-primary">
+      {/* Background Decor */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+        <div className="absolute -top-24 -left-24 w-64 h-64 bg-md-primary-container rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -right-32 w-80 h-80 bg-md-secondary-container rounded-full blur-3xl" />
+        <div className="absolute -bottom-24 left-1/4 w-72 h-72 bg-md-tertiary-container rounded-full blur-3xl" />
+      </div>
+
       {/* Logo & Title */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 text-white safe-area-inset-top">
-        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
-          <ShoppingBag className="w-14 h-14 text-purple-600" />
+      <div className="flex-1 flex flex-col items-center justify-center px-8 text-md-on-primary safe-area-inset-top relative z-10">
+        <div className="w-28 h-28 bg-md-surface-container-lowest rounded-md-xl flex items-center justify-center mb-8 elevation-4 rotate-3 border-4 border-md-primary-container/30">
+          <ShoppingBag className="w-16 h-16 text-md-primary" />
         </div>
         
-        <h1 className="text-3xl text-center font-bold mb-3">
-          AI Shopping Concierge
+        <h1 className="text-4xl text-center font-black mb-4 tracking-tight leading-tight uppercase">
+          AI Shopping<br/>Concierge
         </h1>
-        <p className="text-purple-100 text-center mb-12 max-w-sm">
+        <p className="text-md-on-primary/80 text-center mb-12 max-w-sm font-medium tracking-wide">
           Your personal assistant for smarter shopping across multiple platforms
         </p>
 
         {/* Features */}
-        <div className="w-full max-w-md space-y-4 mb-12">
+        <div className="w-full max-w-md space-y-4 mb-8">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div 
                 key={index}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 flex items-start gap-4"
+                className="bg-md-on-primary/10 backdrop-blur-md rounded-md-xl p-4 flex items-center gap-5 border border-md-on-primary/10 elevation-1"
               >
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-md-on-primary/20 rounded-md-m flex items-center justify-center flex-shrink-0 elevation-1">
+                  <Icon className="w-6 h-6 text-md-on-primary" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">{feature.title}</h3>
-                  <p className="text-purple-100 text-sm">{feature.description}</p>
+                  <h3 className="text-md-on-primary font-black text-sm uppercase tracking-widest mb-0.5">{feature.title}</h3>
+                  <p className="text-md-on-primary/70 text-xs font-medium">{feature.description}</p>
                 </div>
               </div>
             );
@@ -67,10 +74,10 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       </div>
 
       {/* Sign In Button */}
-      <div className="px-6 pb-8 safe-area-inset-bottom">
+      <div className="px-8 pb-12 safe-area-inset-bottom relative z-10">
         <Button
           onClick={onComplete}
-          className="w-full bg-white text-purple-600 hover:bg-gray-100 h-14 rounded-2xl text-lg font-bold shadow-xl flex items-center justify-center gap-3"
+          className="w-full bg-md-surface-container-lowest text-md-primary hover:bg-md-surface-container-low h-16 rounded-md-full text-lg font-black shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 elevation-2 state-layer uppercase tracking-widest border-b-4 border-md-primary-container"
         >
           <svg className="w-6 h-6" viewBox="0 0 24 24">
             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -78,14 +85,16 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
             <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
             <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
-          Continue with Google
+          Get Started
         </Button>
         
-        <p className="text-center text-white/80 text-[10px] mt-4">
-          By continuing, you agree to our Terms of Service and Privacy Policy
+        <p className="text-center text-md-on-primary/50 text-[9px] mt-6 font-black uppercase tracking-[0.2em]">
+          By continuing, you agree to our Terms and Privacy
         </p>
       </div>
     </div>
+  );
+}
   );
 }
 

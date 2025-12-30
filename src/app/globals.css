@@ -3,31 +3,61 @@
 @tailwind utilities;
 
 :root {
-  --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
+  --background: #FFFBFE;
+  --foreground: #1C1B1F;
+  --card: #FFFBFE;
+  --card-foreground: #1C1B1F;
+  --popover: #FFFBFE;
+  --popover-foreground: #1C1B1F;
+  --primary: #6750A4;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E8DEF8;
+  --secondary-foreground: #1D192B;
+  --muted: #E7E0EC;
+  --muted-foreground: #49454F;
+  --accent: #E7E0EC;
+  --accent-foreground: #1C1B1F;
+  --destructive: #B3261E;
+  --destructive-foreground: #FFFFFF;
+  --border: #79747E;
+  --input: #79747E;
+  --ring: #6750A4;
   --radius: 0.625rem;
+}
+
+@layer utilities {
+  .elevation-1 {
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  }
+  .elevation-2 {
+    box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  }
+  .elevation-3 {
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.30), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+  }
+  .elevation-4 {
+    box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.30), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+  }
+  .elevation-5 {
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.30), 0px 8px 12px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .state-layer {
+    @apply relative overflow-hidden;
+  }
+  .state-layer::after {
+    content: '';
+    @apply absolute inset-0 bg-current opacity-0 transition-opacity duration-150;
+  }
+  .state-layer:hover::after {
+    @apply opacity-[0.08];
+  }
+  .state-layer:focus::after {
+    @apply opacity-[0.12];
+  }
+  .state-layer:active::after {
+    @apply opacity-[0.12];
+  }
 }
 
 .dark {
