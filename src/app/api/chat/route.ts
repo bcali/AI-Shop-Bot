@@ -2,6 +2,8 @@ import { openai } from '@ai-sdk/openai';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
 
+export const runtime = 'edge';
+
 // Mock product search tool
 // In a real app, this would fetch from Shopee/Lazada/Amazon APIs
 const mockSearch = async (query: string) => {
