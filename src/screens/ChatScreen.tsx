@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { User } from 'lucide-react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
 import { ChatMessage } from '../components/ChatMessage';
 import { ChatInput } from '../components/ChatInput';
 import { ProductCard, Product } from '../components/ProductCard';
