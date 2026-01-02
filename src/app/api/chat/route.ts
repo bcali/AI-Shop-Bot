@@ -70,16 +70,16 @@ export async function POST(req: Request) {
       searchProducts: tool({
         description: 'Search for products across Shopee, Lazada, and Amazon',
         parameters: z.object({
-          query: z.string().description('The product search query'),
+          query: z.string(),
         }),
-        execute: async ({ query }) => {
+        execute: async ({ query }: { query: string }) => {
           const products = await mockSearch(query);
           return { products };
         },
-      }),
-    },
+      } as any),
+    } as any,
   });
 
-  return result.toDataStreamResponse();
+  return (result as any).toDataStreamResponse();
 }
 

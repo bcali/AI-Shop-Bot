@@ -1,4 +1,4 @@
-import { TrendingDown, ChevronRight, Bell as BellIcon, Zap } from 'lucide-react';
+import { TrendingDown, ChevronRight, Bell as BellIcon, Zap, ShoppingBag } from 'lucide-react';
 import { Product } from '../components/ProductCard';
 
 export interface DealAlert {

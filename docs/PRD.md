@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-A mobile-first progressive web app that acts as an AI shopping concierge for Shopee, Lazada, and Amazon. It uses a chat interface powered by ChatGPT APIs to search, compare, and monitor products, then executes purchases via an Agentic Commerce Protocol only after explicit confirmation.
+A mobile-first progressive web app that acts as an AI shopping concierge for Shopee, Lazada, and Amazon. It uses a chat interface powered by the Vercel AI SDK and Material Design 3 (Version 11) to search, compare, and monitor products, then executes purchases via an Agentic Commerce Protocol only after explicit confirmation.
 
 ---
 
@@ -10,23 +10,23 @@ A mobile-first progressive web app that acts as an AI shopping concierge for Sho
 
 ### Business Goals
 
-* Serve as a personal reference implementation for agentic commerce across Shopee, Lazada, and Amazon
-* Reduce time spent on product discovery and comparison by ~80%
-* Achieve >90% of monitored purchases at or below target price
-* Zero unauthorized or surprise purchases
+* Serve as a personal reference implementation for agentic commerce across Shopee, Lazada, and Amazon.
+* Reduce time spent on product discovery and comparison by ~80%.
+* Achieve >90% of monitored purchases at or below target price.
+* Zero unauthorized or surprise purchases.
 
 ### User Goals
 
-* Natural-language product discovery
-* Price monitoring with alerts
-* Fast, safe purchase confirmation
-* Installable PWA experience
+* Natural-language product discovery via an intelligent chat interface.
+* Cross-platform price comparison (Shopee, Lazada, Amazon).
+* Price monitoring with real-time alerts and target price settings.
+* Fast, safe purchase confirmation with clear price breakdown.
+* High-quality, installable PWA experience matching Material Design 3 standards.
 
 ### Non-Goals
 
-* Multi-user or shared usage
-* Logistics, returns, or customer service handling
-* Custom design system (Material Design only)
+* Multi-user or shared usage (optimized for personal use).
+* Logistics, returns, or customer service handling (handled by platforms).
 
 ---
 
@@ -34,155 +34,81 @@ A mobile-first progressive web app that acts as an AI shopping concierge for Sho
 
 ### Individual Shopper
 
-* Install the app as a PWA
-* Sign in using Google OAuth
-* Store shipping address
-* Search products via chat
-* Refine results
-* Set price watches
-* Explicitly confirm purchases
-* Review history and alerts
-
-### System / Admin
-
-* Manage marketplace credentials
-* Audit searches, alerts, and purchases
-* Reset stored data
+* **Install**: I want to install the app as a PWA on my mobile device for quick access.
+* **Discover**: I want to search for products using natural language across multiple marketplaces.
+* **Compare**: I want to see a side-by-side comparison of prices, ratings, and shipping for the same item.
+* **Monitor**: I want to set a "target price" for a product and get notified when it hits that price.
+* **Purchase**: I want a clear, two-step confirmation flow before any purchase is executed.
+* **Track**: I want to view my history of searches, price alerts, and orders.
 
 ---
 
 ## Functional Requirements
 
-### Authentication & Security (High)
-
-* Google OAuth only
-* Encrypted storage for secrets
-* App reset capability
-
-### PWA Shell & Notifications (High)
-
-* Installable PWA
-* Offline caching
-* Badge counts for alerts
-
-### Profile & Preferences (High)
-
-* Shipping address
-* Notification preferences
-* Currency and region
-
-### Marketplace Search & Comparison (High)
-
-* Shopee, Lazada, Amazon
-* Normalized product schema
-* Sorting and filtering
-
-### Deal Monitoring & Alerts (Medium)
-
-* Target price watches
-* Scheduled background checks
-* Alert lifecycle tracking
-
-### Agentic Purchase with Explicit Confirmation (Medium)
-
-* Purchase proposals
-* Confirmation UI
-* No automatic purchases
+### UI/UX: Material Design 3 (High)
+* **Design System**: Fully implemented Material Design 3 (MD3) guidelines (Version 11).
+* **Typography**: Primary typeface is **Roboto** (400, 500, 700, 900 weights).
+* **Color System**: Dynamic MD3 color palette (Primary: #6750A4) with surface containers and state layers.
+* **Elevation**: Standardized MD3 elevation system (elevation-1 to elevation-5) for depth.
+* **Shapes**: Standardized border radii (md-xs to md-xl) for components.
 
 ### Chat Interface (High)
+* **Engine**: Powered by **Vercel AI SDK** (`useChat`).
+* **Tool Calling**: Native support for tools like `searchProducts`.
+* **Visuals**: Chat bubbles with MD3 styling, typing indicators, and quick actions.
+* **Platform Branding**: Distinctive color coding for Shopee (Orange), Lazada (Blue), and Amazon (Yellow).
 
-* Primary UI surface
-* Product cards and CTAs
-* Session context management
+### Marketplace Search & Comparison (High)
+* **Connectors**: Integration with Shopee, Lazada, and Amazon.
+* **Normalized Data**: Unified product schema (ID, name, price, original price, platform, rating, reviews, image, shipping).
+* **Price Comparison**: Dedicated component to highlight the "Best Price" across platforms.
 
----
+### Deal Monitoring & Alerts (High)
+* **Price Target Modal**: New component for setting specific target prices (e.g., -10%, -20%, -30%).
+* **Alert Lifecycle**: Ability to view, disable, or remove active price alerts.
+* **Deals Screen**: Centralized view for monitoring active price drops.
 
-## User Experience
-
-### First-Time Experience
-
-* Google sign-in
-* PWA install prompt
-* Shipping address setup
-* Intro to core flows
-
-### Core Experience
-
-* Chat-based search
-* Refinement
-* Monitoring and alerts
-
-### Purchase Experience
-
-* Review panel
-* Explicit confirmation
-* Receipt and history entry
+### Secure Purchase Flow (High)
+* **Explicit Confirmation**: Dedicated `PurchaseConfirmation` screen with full cost breakdown (item + shipping).
+* **Success Feedback**: `PurchaseSuccess` screen with order numbers and estimated delivery.
+* **No Automatic Buying**: Strict enforcement of "Review & Purchase" before execution.
 
 ---
 
-## Success Metrics
+## Technical Stack
 
-### User Metrics
+### Frontend & Deployment
+* **Framework**: Next.js 15+ (TypeScript).
+* **Styling**: Tailwind CSS with custom MD3 configuration.
+* **Icons**: Lucide React.
+* **Deployment**: Cloudflare Pages.
 
-* Time to purchase
-* Usage frequency
-* Target price hit rate
-
-### Business Metrics
-
-* Estimated savings
-* Alert-to-purchase conversion
-
-### Technical Metrics
-
-* PWA launch rate
-* API latency
-* Error rates
+### Backend & Data
+* **Database**: PostgreSQL.
+* **ORM**: Drizzle ORM.
+* **AI Integration**: Vercel AI SDK for model orchestration and streaming.
+* **PWA**: Mobile-first design with safe-area handling and overscroll containment.
 
 ---
 
-## Technical Considerations
+## Milestones (Current Progress)
 
-### Architecture
+### ✅ Phase 1: Core PWA & UI Foundation
+* Setup Next.js + Tailwind + Lucide.
+* Implement MD3 "Version 11" design system.
+* Build PWA shell and bottom navigation.
 
-* Next.js (TypeScript)
-* Vercel deployment
-* PostgreSQL (Neon/Supabase)
-* ChatGPT APIs
+### ✅ Phase 2: AI Search & Comparison
+* Integrate Vercel AI SDK.
+* Implement `searchProducts` tool.
+* Build Product Card and Price Comparison components.
 
-### Integrations
+### 🟡 Phase 3: Monitoring & Purchase (In Progress)
+* Implement `PriceTargetModal` and monitoring logic.
+* Finalize `PurchaseConfirmation` and `PurchaseSuccess` flows.
+* Integration with Agentic Commerce Protocol.
 
-* Google OAuth (NextAuth)
-* Shopee / Lazada / Amazon
-* Agentic Commerce Protocol
-
-### Data Model (Conceptual)
-
-* user
-* product
-* watch
-* deal_alert
-* purchase
-* chat_session
-
-### Agent Flow
-
-1. Intent capture
-2. Search & normalization
-3. Refinement
-4. Watch creation
-5. Monitoring
-6. Proposal & confirmation
-7. Purchase & logging
-
----
-
-## Milestones
-
-### Phase 1: PWA & Chat Search
-
-### Phase 2: Watches & Alerts
-
-### Phase 3: Agentic Purchase
-
-### Phase 4: Refinement & Hardening
+### ⚪ Phase 4: History & Polish
+* Implement Activity History screen.
+* Finalize Profile and Notification settings.
+* Build verification and error hardening.

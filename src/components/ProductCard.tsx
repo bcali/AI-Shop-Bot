@@ -114,6 +114,4 @@ export function ProductCard({ product, onBuy, onMonitor }: ProductCardProps) {
     </div>
   );
 }
-  );
-}
 

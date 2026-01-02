@@ -89,6 +89,4 @@ export function PriceComparison({ products, onSelectProduct }: PriceComparisonPr
     </div>
   );
 }
-  );
-}
 

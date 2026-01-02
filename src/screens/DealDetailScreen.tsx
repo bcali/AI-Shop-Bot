@@ -214,6 +214,4 @@ export function DealDetailScreen({ deal, onBack, onDisableAlert, onBuyNow }: Dea
     </div>
   );
 }
-  );
-}
 
